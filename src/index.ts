@@ -1,8 +1,10 @@
 import "dotenv/config";
-import { Telegraf } from "telegraf";
+import { Scenes, session, Telegraf } from "telegraf";
 import { Logger } from "tslog";
-import startHandler from "./handlers/start.handler";
+import startHandler from "./handlers/browser.handlers";
 import browserMiddleware from "./middlewares/browser.middleware";
+import controlsScene from "./scenes/controls.scene";
+import textEnterScene from "./scenes/textEnter.scene";
 import { MyContext } from "./types";
 
 function configureBot(bot: Telegraf<MyContext>) {
@@ -21,8 +23,15 @@ async function main() {
     }
 
     const bot = new Telegraf<MyContext>(BOT_TOKEN);
+    const stage = new Scenes.Stage<MyContext>([
+        controlsScene,
+        textEnterScene
+    ]);
 
+    bot.use(session())
+    bot.use(stage.middleware())
     bot.use(browserMiddleware)
+    
     configureBot(bot);
 
     await bot.launch()
