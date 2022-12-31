@@ -2,6 +2,7 @@ import "dotenv/config";
 import { Telegraf } from "telegraf";
 import { Logger } from "tslog";
 import startHandler from "./handlers/start.handler";
+import browserMiddleware from "./middlewares/browser.middleware";
 import { MyContext } from "./types";
 
 function configureBot(bot: Telegraf<MyContext>) {
@@ -21,6 +22,7 @@ async function main() {
 
     const bot = new Telegraf<MyContext>(BOT_TOKEN);
 
+    bot.use(browserMiddleware)
     configureBot(bot);
 
     await bot.launch()
